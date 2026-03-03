@@ -13,7 +13,8 @@ public enum ProblemType {
 	ENTIDADE_EM_USO("/entidade-em-uso","Entidade em uso"), 
 	ERRO_NEGOCIO("/erro-negocio", "Erro de Negocio"),
 	CPF_DUPLICADO("/cpf-duplicado", "CPF Duplicado"),
-	ACESSO_NEGADO ("/acesso-negado", "Acesso Negado");
+	ACESSO_NEGADO ("/acesso-negado", "Acesso Negado"),
+	NAO_AUTENTICADO("/nao-autenticado", "Usuário não autenticado");
 
 	private String title;
 	private String uri;

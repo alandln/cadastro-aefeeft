@@ -1,9 +1,6 @@
 package com.asce1dev.cadastroaefeeft.api.exceptionhandler;
 
-import com.asce1dev.cadastroaefeeft.domain.exception.CpfDuplicadoException;
-import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
-import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeNaoEncontradaException;
-import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
+import com.asce1dev.cadastroaefeeft.domain.exception.*;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
@@ -82,11 +79,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, problem, headers, status, request);
 	}
 
-	@ExceptionHandler(AuthenticationException.class)
-	public ResponseEntity<?> handleAuthentication(AuthenticationException ex, WebRequest request) {
-		HttpStatus status = HttpStatus.UNAUTHORIZED;
-		ProblemType problemType = ProblemType.ACESSO_NEGADO; // se não existir, use ERRO_DE_SISTEMA por enquanto ou crie depois
-		String detail = "Você precisa estar autenticado para acessar este recurso.";
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
+		HttpStatus status = HttpStatus.FORBIDDEN;
+		ProblemType problemType = ProblemType.ACESSO_NEGADO; // idem
+		String detail = "Você não tem permissão para executar esta operação.";
 
 		Problem problem = createProblemBuilder(status, problemType, detail)
 				.userMessage(detail)
@@ -95,11 +92,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
 
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
-		HttpStatus status = HttpStatus.FORBIDDEN;
-		ProblemType problemType = ProblemType.ACESSO_NEGADO; // idem
-		String detail = "Você não tem permissão para executar esta operação.";
+	@ExceptionHandler(NaoAutenticadoException.class)
+	public ResponseEntity<?> handleNaoAutenticado(NaoAutenticadoException ex, WebRequest request) {
+
+		HttpStatus status = HttpStatus.UNAUTHORIZED;
+		ProblemType problemType = ProblemType.NAO_AUTENTICADO;
+		String detail = ex.getMessage();
 
 		Problem problem = createProblemBuilder(status, problemType, detail)
 				.userMessage(detail)
