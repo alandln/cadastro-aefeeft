@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -59,7 +58,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 					if (objectError instanceof FieldError) {
 						FieldError fieldError = (FieldError) objectError;
-						name = fieldError.getObjectName() + "." + fieldError.getField();
+						name = fieldError.getField();
 					}
 
 					return Problem.Object.builder()

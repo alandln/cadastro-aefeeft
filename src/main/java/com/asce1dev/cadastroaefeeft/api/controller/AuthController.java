@@ -1,19 +1,23 @@
 package com.asce1dev.cadastroaefeeft.api.controller;
 
+import com.asce1dev.cadastroaefeeft.api.openapi.AuthControllerOpenApi;
 import com.asce1dev.cadastroaefeeft.core.security.JwtService;
 import com.asce1dev.cadastroaefeeft.domain.exception.NaoAutenticadoException;
-import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-import org.springframework.security.authentication.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerOpenApi {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;

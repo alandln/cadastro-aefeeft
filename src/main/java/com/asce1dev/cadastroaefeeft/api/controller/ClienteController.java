@@ -6,6 +6,7 @@ import com.asce1dev.cadastroaefeeft.api.assembler.ClienteResumoModelAssembler;
 import com.asce1dev.cadastroaefeeft.api.model.ClienteModel;
 import com.asce1dev.cadastroaefeeft.api.model.ClienteResumoModel;
 import com.asce1dev.cadastroaefeeft.api.model.input.ClienteInput;
+import com.asce1dev.cadastroaefeeft.api.openapi.ClienteControllerOpenApi;
 import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import com.asce1dev.cadastroaefeeft.domain.service.ClienteService;
 import jakarta.validation.Valid;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/clientes")
-public class ClienteController {
+public class ClienteController implements ClienteControllerOpenApi {
 
 	private final ClienteService clienteService;
 	private final ClienteModelAssembler clienteModelAssembler;

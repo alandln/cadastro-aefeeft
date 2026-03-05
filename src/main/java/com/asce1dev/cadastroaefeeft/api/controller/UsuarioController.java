@@ -5,6 +5,7 @@ import com.asce1dev.cadastroaefeeft.api.assembler.UsuarioModelAssembler;
 import com.asce1dev.cadastroaefeeft.api.model.UsuarioModel;
 import com.asce1dev.cadastroaefeeft.api.model.input.SenhaInput;
 import com.asce1dev.cadastroaefeeft.api.model.input.UsuarioInput;
+import com.asce1dev.cadastroaefeeft.api.openapi.UsuarioControllerOpenApi;
 import com.asce1dev.cadastroaefeeft.domain.model.Usuario;
 import com.asce1dev.cadastroaefeeft.domain.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
-public class UsuarioController {
+public class UsuarioController implements UsuarioControllerOpenApi {
 
     private final UsuarioService usuarioService;
     private final UsuarioModelAssembler usuarioModelAssembler;
