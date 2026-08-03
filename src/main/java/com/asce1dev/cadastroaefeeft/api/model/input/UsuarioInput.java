@@ -15,7 +15,4 @@ public class UsuarioInput {
 
     @NotBlank
     private String password;
-
-    private Role role;
-    private boolean active;
 }

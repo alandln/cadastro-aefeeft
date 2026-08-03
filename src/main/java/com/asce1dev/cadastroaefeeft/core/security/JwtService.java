@@ -50,12 +50,6 @@ public class JwtService {
         return parseClaims(token).getBody().getSubject();
     }
 
-    private Jws<Claims> parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
-    }
     public boolean isTokenValid(String token, UserDetails user) {
         var username = extractUsername(token);
         return username.equals(user.getUsername()) && !isExpired(token);
@@ -66,4 +60,10 @@ public class JwtService {
         return exp.before(new Date());
     }
 
+    private Jws<Claims> parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+    }
 }

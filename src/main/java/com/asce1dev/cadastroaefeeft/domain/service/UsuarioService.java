@@ -34,10 +34,8 @@ public class UsuarioService {
     @Transactional
     public Usuario salvarUsuario(Usuario usuario) {
         try {
-            if(usuario.getRole() == null) {
-                usuario.setRole(Role.USER);
-            }
-
+            usuario.setRole(Role.USER);
+            usuario.setActive(true);
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
             return usuarioRepository.saveAndFlush(usuario);

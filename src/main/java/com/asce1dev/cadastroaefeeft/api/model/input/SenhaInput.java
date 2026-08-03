@@ -9,5 +9,5 @@ import lombok.Setter;
 public class SenhaInput {
 
     @NotBlank
-    private String newPassword;
+    private String password;
 }

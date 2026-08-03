@@ -41,7 +41,7 @@ public class ClienteService {
 
 		String cpfLimpo = cpf.trim().replaceAll("\\D", "");
 		if (cpfLimpo.isEmpty()) {
-			throw new NegocioException("CPF Inválido.");
+			throw new NegocioException("CPF inválido.");
 		}
 		return clienteRepository.findClienteByCpfStartingWith(cpfLimpo, pageable);
 

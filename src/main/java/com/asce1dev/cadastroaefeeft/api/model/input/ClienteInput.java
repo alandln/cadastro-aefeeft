@@ -39,7 +39,7 @@ public class ClienteInput {
 	private String padrao;
 	private String identificacaoUnica;
 	private String rg;
-	private String dataEmissaoRg;
+	private LocalDate dataEmissaoRg;
 
 	private EstadoCivil estadoCivil;
 

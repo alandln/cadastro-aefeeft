@@ -3,6 +3,7 @@ package com.asce1dev.cadastroaefeeft.api.controller;
 import com.asce1dev.cadastroaefeeft.api.openapi.AuthControllerOpenApi;
 import com.asce1dev.cadastroaefeeft.core.security.JwtService;
 import com.asce1dev.cadastroaefeeft.domain.exception.NaoAutenticadoException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,7 @@ public class AuthController implements AuthControllerOpenApi {
     private final JwtService jwtService;
 
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody LoginRequest request) {
+    public TokenResponse login(@RequestBody @Valid LoginRequest request) {
         try {
             var authToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
             var authentication = authenticationManager.authenticate(authToken);

@@ -47,7 +47,7 @@ public class UsuarioController implements UsuarioControllerOpenApi {
     @PatchMapping("/{usuarioId}/senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void alterarSenha(@PathVariable Long usuarioId, @Valid @RequestBody SenhaInput senhaInput) {
-        usuarioService.alterarSenha(usuarioId, senhaInput.getNewPassword());
+        usuarioService.alterarSenha(usuarioId, senhaInput.getPassword());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
