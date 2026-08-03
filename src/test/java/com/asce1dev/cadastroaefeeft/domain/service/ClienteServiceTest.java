@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -94,27 +95,110 @@ class ClienteServiceTest {
     @Test
     void deve_salvar_cliente_com_sucesso() {
         Cliente cliente = new Cliente();
+        cliente.setCpf("52998224725");
 
+        when(clienteRepository.findByCpf("52998224725")).thenReturn(Optional.empty());
         when(clienteRepository.saveAndFlush(cliente)).thenReturn(cliente);
 
         Cliente result = clienteService.salvarCliente(cliente);
 
         assertNotNull(result);
+        assertEquals("52998224725", result.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
         verify(clienteRepository).saveAndFlush(cliente);
         verifyNoMoreInteractions(clienteRepository);
     }
 
     @Test
-    void deve_acusar_erro_de_cpf_duplicado() {
+    void deve_normalizar_cpf_mascarado_antes_de_salvar() {
         Cliente cliente = new Cliente();
+        cliente.setCpf("529.982.247-25");
 
-        when(clienteRepository.saveAndFlush(cliente))
-                .thenThrow(DataIntegrityViolationException.class);
+        when(clienteRepository.findByCpf("52998224725")).thenReturn(Optional.empty());
+        when(clienteRepository.saveAndFlush(cliente)).thenReturn(cliente);
+
+        Cliente result = clienteService.salvarCliente(cliente);
+
+        assertEquals("52998224725", result.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
+        verify(clienteRepository).saveAndFlush(cliente);
+    }
+
+    @Test
+    void deve_manter_cpf_sem_mascara_antes_de_salvar() {
+        Cliente cliente = new Cliente();
+        cliente.setCpf("52998224725");
+
+        when(clienteRepository.findByCpf("52998224725")).thenReturn(Optional.empty());
+        when(clienteRepository.saveAndFlush(cliente)).thenReturn(cliente);
+
+        Cliente result = clienteService.salvarCliente(cliente);
+
+        assertEquals("52998224725", result.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
+        verify(clienteRepository).saveAndFlush(cliente);
+    }
+
+    @Test
+    void deve_acusar_erro_de_cpf_duplicado_no_cadastro() {
+        Cliente cliente = new Cliente();
+        cliente.setCpf("529.982.247-25");
+
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setId(1L);
+        clienteExistente.setCpf("52998224725");
+
+        when(clienteRepository.findByCpf("52998224725"))
+                .thenReturn(Optional.of(clienteExistente));
 
         assertThrows(CpfDuplicadoException.class, () ->
                 clienteService.salvarCliente(cliente));
 
+        assertEquals("52998224725", cliente.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
+        verify(clienteRepository, never()).saveAndFlush(any(Cliente.class));
+    }
+
+    @Test
+    void deve_permitir_atualizacao_mantendo_o_proprio_cpf() {
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+        cliente.setCpf("529.982.247-25");
+
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setId(1L);
+        clienteExistente.setCpf("52998224725");
+
+        when(clienteRepository.findByCpf("52998224725"))
+                .thenReturn(Optional.of(clienteExistente));
+        when(clienteRepository.saveAndFlush(cliente)).thenReturn(cliente);
+
+        Cliente result = clienteService.salvarCliente(cliente);
+
+        assertEquals("52998224725", result.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
         verify(clienteRepository).saveAndFlush(cliente);
+    }
+
+    @Test
+    void deve_acusar_erro_ao_atualizar_com_cpf_de_outro_cliente() {
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+        cliente.setCpf("529.982.247-25");
+
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setId(2L);
+        clienteExistente.setCpf("52998224725");
+
+        when(clienteRepository.findByCpf("52998224725"))
+                .thenReturn(Optional.of(clienteExistente));
+
+        assertThrows(CpfDuplicadoException.class, () ->
+                clienteService.salvarCliente(cliente));
+
+        assertEquals("52998224725", cliente.getCpf());
+        verify(clienteRepository).findByCpf("52998224725");
+        verify(clienteRepository, never()).saveAndFlush(any(Cliente.class));
     }
 
     @Test

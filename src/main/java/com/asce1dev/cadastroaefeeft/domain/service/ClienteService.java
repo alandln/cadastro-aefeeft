@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @RequiredArgsConstructor
 @Service
 public class ClienteService {
@@ -49,11 +51,17 @@ public class ClienteService {
 
 	@Transactional
 	public Cliente salvarCliente(Cliente cliente) {
-		try {
-			return clienteRepository.saveAndFlush(cliente);
-		} catch (DataIntegrityViolationException e) {
-			throw new CpfDuplicadoException();
-		}
+		String cpfLimpo = cliente.getCpf().replaceAll("\\D", "");
+		cliente.setCpf(cpfLimpo);
+
+		clienteRepository.findByCpf(cpfLimpo)
+				.filter(clienteExistente -> cliente.getId() == null
+						|| !Objects.equals(clienteExistente.getId(), cliente.getId()))
+				.ifPresent(clienteExistente -> {
+					throw new CpfDuplicadoException();
+				});
+
+		return clienteRepository.saveAndFlush(cliente);
 	}
 
 	@Transactional
