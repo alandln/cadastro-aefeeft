@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -204,10 +203,15 @@ class ClienteServiceTest {
     @Test
     void deve_deletar_cliente_com_sucesso() {
         Long id = 1L;
+        Cliente cliente = new Cliente();
+
+        when(clienteRepository.findById(id)).thenReturn(Optional.of(cliente));
 
         clienteService.deletarCliente(id);
 
-        verify(clienteRepository).deleteById(id);
+        verify(clienteRepository).findById(id);
+        verify(clienteRepository).delete(cliente);
+        verify(clienteRepository).flush();
         verifyNoMoreInteractions(clienteRepository);
     }
 
@@ -215,28 +219,32 @@ class ClienteServiceTest {
     void deve_acusar_erro_de_cliente_nao_encontrado() {
         Long id = 1L;
 
-        doThrow(new EmptyResultDataAccessException(1))
-                .when(clienteRepository)
-                .deleteById(id);
+        when(clienteRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ClienteNaoEncontradoException.class, () ->
                 clienteService.deletarCliente(id));
 
-        verify(clienteRepository).deleteById(id);
+        verify(clienteRepository).findById(id);
+        verify(clienteRepository, never()).delete(any(Cliente.class));
+        verify(clienteRepository, never()).flush();
     }
 
     @Test
     void deve_acusar_erro_de_cliente_em_uso() {
         Long id = 1L;
+        Cliente cliente = new Cliente();
 
+        when(clienteRepository.findById(id)).thenReturn(Optional.of(cliente));
         doThrow(new DataIntegrityViolationException(""))
                 .when(clienteRepository)
-                .deleteById(id);
+                .flush();
 
         assertThrows(EntidadeEmUsoException.class, () ->
                 clienteService.deletarCliente(id));
 
-        verify(clienteRepository).deleteById(id);
+        verify(clienteRepository).findById(id);
+        verify(clienteRepository).delete(cliente);
+        verify(clienteRepository).flush();
     }
 
     @Test

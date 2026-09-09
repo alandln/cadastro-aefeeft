@@ -9,7 +9,6 @@ import com.asce1dev.cadastroaefeeft.domain.repository.ClienteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -66,12 +65,11 @@ public class ClienteService {
 
 	@Transactional
 	public void deletarCliente(Long id) {
+		Cliente cliente = buscarOuFalhar(id);
+
 		try {
-			clienteRepository.deleteById(id);
-			
-		} catch (EmptyResultDataAccessException e) {
-			throw new ClienteNaoEncontradoException(id);
-			
+			clienteRepository.delete(cliente);
+			clienteRepository.flush();
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
 					String.format(MSG_ENTIDADE_EM_USO,id));
