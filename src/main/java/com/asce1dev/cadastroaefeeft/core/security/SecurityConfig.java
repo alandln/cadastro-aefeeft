@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(proxyTargetClass = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 

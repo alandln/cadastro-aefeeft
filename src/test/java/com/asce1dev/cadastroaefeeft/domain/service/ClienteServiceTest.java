@@ -5,6 +5,7 @@ import com.asce1dev.cadastroaefeeft.domain.exception.ClienteNaoEncontradoExcepti
 import com.asce1dev.cadastroaefeeft.domain.exception.CpfDuplicadoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
+import com.asce1dev.cadastroaefeeft.domain.exception.SenhaGovNaoCadastradaException;
 import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import com.asce1dev.cadastroaefeeft.domain.repository.ClienteRepository;
 import org.junit.jupiter.api.Test;
@@ -285,6 +286,67 @@ class ClienteServiceTest {
 
         assertEquals("novo-ciphertext", result.getSenhaGov());
         verify(senhaGovCryptoService).criptografar("v1:senha-real");
+    }
+
+    @Test
+    void deve_revelar_senha_gov_descriptografada() {
+        Long clienteId = 1L;
+        Cliente cliente = clienteExistenteComSenhaGov();
+
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+        when(senhaGovCryptoService.descriptografar("ciphertext-existente"))
+                .thenReturn("senha original");
+
+        String senhaGov = clienteService.revelarSenhaGov(clienteId);
+
+        assertEquals("senha original", senhaGov);
+        verify(senhaGovCryptoService).descriptografar("ciphertext-existente");
+        verify(clienteRepository, never()).save(any(Cliente.class));
+        verify(clienteRepository, never()).saveAndFlush(any(Cliente.class));
+    }
+
+    @Test
+    void deve_acusar_senha_gov_nao_cadastrada_para_valor_null() {
+        Long clienteId = 1L;
+        Cliente cliente = clienteExistenteComSenhaGov();
+        cliente.setSenhaGov(null);
+
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+
+        assertThrows(SenhaGovNaoCadastradaException.class,
+                () -> clienteService.revelarSenhaGov(clienteId));
+
+        verifyNoInteractions(senhaGovCryptoService);
+    }
+
+    @Test
+    void deve_acusar_senha_gov_nao_cadastrada_para_valor_branco() {
+        Long clienteId = 1L;
+        Cliente cliente = clienteExistenteComSenhaGov();
+        cliente.setSenhaGov("   ");
+
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+
+        assertThrows(SenhaGovNaoCadastradaException.class,
+                () -> clienteService.revelarSenhaGov(clienteId));
+
+        verifyNoInteractions(senhaGovCryptoService);
+    }
+
+    @Test
+    void deve_propagar_falha_de_descriptografia() {
+        Long clienteId = 1L;
+        Cliente cliente = clienteExistenteComSenhaGov();
+        IllegalStateException falhaCriptografica = new IllegalStateException("Falha segura");
+
+        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+        when(senhaGovCryptoService.descriptografar("ciphertext-existente"))
+                .thenThrow(falhaCriptografica);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> clienteService.revelarSenhaGov(clienteId));
+
+        assertEquals(falhaCriptografica, exception);
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.asce1dev.cadastroaefeeft.domain.exception.ClienteNaoEncontradoExcepti
 import com.asce1dev.cadastroaefeeft.domain.exception.CpfDuplicadoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
+import com.asce1dev.cadastroaefeeft.domain.exception.SenhaGovNaoCadastradaException;
 import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import com.asce1dev.cadastroaefeeft.domain.repository.ClienteRepository;
 import jakarta.transaction.Transactional;
@@ -82,6 +83,17 @@ public class ClienteService {
 				});
 
 		return clienteRepository.saveAndFlush(cliente);
+	}
+
+	public String revelarSenhaGov(Long clienteId) {
+		Cliente cliente = buscarOuFalhar(clienteId);
+		String senhaGov = cliente.getSenhaGov();
+
+		if (senhaGov == null || senhaGov.isBlank()) {
+			throw new SenhaGovNaoCadastradaException(clienteId);
+		}
+
+		return senhaGovCryptoService.descriptografar(senhaGov);
 	}
 
 	@Transactional

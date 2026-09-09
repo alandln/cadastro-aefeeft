@@ -2,6 +2,7 @@ package com.asce1dev.cadastroaefeeft.domain.service;
 
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeNaoEncontradaException;
+import com.asce1dev.cadastroaefeeft.domain.exception.NaoAutenticadoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
 import com.asce1dev.cadastroaefeeft.domain.exception.UsuarioNaoEncontradoException;
 import com.asce1dev.cadastroaefeeft.domain.model.Role;
@@ -22,9 +23,20 @@ public class UsuarioService {
 
     private static final String MSG_ENTIDADE_EM_USO = "Usuário de código %d não pode ser removido," +
             "pois está em uso";
+    private static final String MSG_REAUTENTICACAO_INVALIDA =
+            "Não foi possível confirmar as credenciais do usuário";
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public void reautenticar(String username, String password) {
+        var usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new NaoAutenticadoException(MSG_REAUTENTICACAO_INVALIDA));
+
+        if (!usuario.isActive() || !passwordEncoder.matches(password, usuario.getPassword())) {
+            throw new NaoAutenticadoException(MSG_REAUTENTICACAO_INVALIDA);
+        }
+    }
 
     @Transactional
     public List<Usuario> listarUsuarios() {

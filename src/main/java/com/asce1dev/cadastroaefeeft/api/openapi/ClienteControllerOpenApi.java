@@ -2,7 +2,9 @@ package com.asce1dev.cadastroaefeeft.api.openapi;
 
 import com.asce1dev.cadastroaefeeft.api.model.ClienteModel;
 import com.asce1dev.cadastroaefeeft.api.model.ClienteResumoModel;
+import com.asce1dev.cadastroaefeeft.api.model.SenhaGovModel;
 import com.asce1dev.cadastroaefeeft.api.model.input.ClienteInput;
+import com.asce1dev.cadastroaefeeft.api.model.input.SenhaInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 @Tag(name = "Clientes", description = "Gerenciamento de clientes")
 public interface ClienteControllerOpenApi {
@@ -81,6 +85,21 @@ public interface ClienteControllerOpenApi {
     void deletarCliente(
             @Parameter(description = "ID do cliente", example = "1")
             Long clienteId
+    );
+
+    @Operation(summary = "Revela a senha Gov.br após reautenticação do administrador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Senha Gov.br revelada"),
+            @ApiResponse(responseCode = "400", ref = "#/components/responses/BadRequest"),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/Unauthorized"),
+            @ApiResponse(responseCode = "403", ref = "#/components/responses/Forbidden"),
+            @ApiResponse(responseCode = "404", ref = "#/components/responses/NotFound")
+    })
+    ResponseEntity<SenhaGovModel> revelarSenhaGov(
+            @Parameter(description = "ID do cliente", example = "1")
+            Long clienteId,
+            SenhaInput senhaInput,
+            @Parameter(hidden = true) Authentication authentication
     );
 
 }

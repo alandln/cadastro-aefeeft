@@ -5,10 +5,13 @@ import com.asce1dev.cadastroaefeeft.api.assembler.ClienteModelAssembler;
 import com.asce1dev.cadastroaefeeft.api.assembler.ClienteResumoModelAssembler;
 import com.asce1dev.cadastroaefeeft.api.model.ClienteModel;
 import com.asce1dev.cadastroaefeeft.api.model.ClienteResumoModel;
+import com.asce1dev.cadastroaefeeft.api.model.SenhaGovModel;
 import com.asce1dev.cadastroaefeeft.api.model.input.ClienteInput;
+import com.asce1dev.cadastroaefeeft.api.model.input.SenhaInput;
 import com.asce1dev.cadastroaefeeft.api.openapi.ClienteControllerOpenApi;
 import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import com.asce1dev.cadastroaefeeft.domain.service.ClienteService;
+import com.asce1dev.cadastroaefeeft.domain.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +34,7 @@ public class ClienteController implements ClienteControllerOpenApi {
 	private final ClienteModelAssembler clienteModelAssembler;
 	private final ClienteInputDisassembler clienteInputDisassembler;
 	private final ClienteResumoModelAssembler clienteResumoModelAssembler;
+	private final UsuarioService usuarioService;
 
 	@GetMapping
 	public Page<ClienteResumoModel> listarClientes(
@@ -68,6 +76,18 @@ public class ClienteController implements ClienteControllerOpenApi {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletarCliente(@PathVariable Long clienteId) {
 		clienteService.deletarCliente(clienteId);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/{clienteId}/senha-gov/revelar")
+	public ResponseEntity<SenhaGovModel> revelarSenhaGov(@PathVariable Long clienteId,
+			@RequestBody @Valid SenhaInput senhaInput, Authentication authentication) {
+		usuarioService.reautenticar(authentication.getName(), senhaInput.getPassword());
+		String senhaGov = clienteService.revelarSenhaGov(clienteId);
+
+		return ResponseEntity.ok()
+				.cacheControl(CacheControl.noStore())
+				.body(new SenhaGovModel(senhaGov));
 	}
 
 }
