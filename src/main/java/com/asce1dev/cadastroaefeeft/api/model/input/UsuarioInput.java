@@ -1,8 +1,7 @@
 package com.asce1dev.cadastroaefeeft.api.model.input;
 
-import com.asce1dev.cadastroaefeeft.domain.model.Role;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +10,7 @@ import lombok.Setter;
 public class UsuarioInput {
 
     @NotBlank
+    @Size(max = 50)
     private String username;
 
     @NotBlank
