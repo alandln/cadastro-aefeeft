@@ -1,5 +1,6 @@
 package com.asce1dev.cadastroaefeeft.domain.service;
 
+import com.asce1dev.cadastroaefeeft.core.security.SenhaGovCryptoService;
 import com.asce1dev.cadastroaefeeft.domain.exception.ClienteNaoEncontradoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.CpfDuplicadoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
@@ -22,6 +23,7 @@ public class ClienteService {
 	private static final String MSG_ENTIDADE_EM_USO = "Cliente de código %d não pode ser removido, pois está em uso";
 
 	private final ClienteRepository clienteRepository;
+	private final SenhaGovCryptoService senhaGovCryptoService;
 	
 	public Page<Cliente> listarClientes(String nome, String cpf, Pageable pageable){
 
@@ -50,6 +52,25 @@ public class ClienteService {
 
 	@Transactional
 	public Cliente salvarCliente(Cliente cliente) {
+		if (cliente.getSenhaGov() == null || cliente.getSenhaGov().isBlank()) {
+			cliente.setSenhaGov(null);
+		} else {
+			cliente.setSenhaGov(senhaGovCryptoService.criptografar(cliente.getSenhaGov()));
+		}
+
+		return persistirCliente(cliente);
+	}
+
+	@Transactional
+	public Cliente atualizarCliente(Cliente cliente, String novaSenhaGov) {
+		if (novaSenhaGov != null && !novaSenhaGov.isBlank()) {
+			cliente.setSenhaGov(senhaGovCryptoService.criptografar(novaSenhaGov));
+		}
+
+		return persistirCliente(cliente);
+	}
+
+	private Cliente persistirCliente(Cliente cliente) {
 		String cpfLimpo = cliente.getCpf().replaceAll("\\D", "");
 		cliente.setCpf(cpfLimpo);
 

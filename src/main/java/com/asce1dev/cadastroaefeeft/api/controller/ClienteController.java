@@ -60,7 +60,8 @@ public class ClienteController implements ClienteControllerOpenApi {
 			
 			clienteInputDisassembler.copyToDomainObject(clienteInput, clienteAtual);	
 			
-			return clienteModelAssembler.toModel(clienteService.salvarCliente(clienteAtual));
+			return clienteModelAssembler.toModel(
+					clienteService.atualizarCliente(clienteAtual, clienteInput.getSenhaGov()));
 	}
 
 	@DeleteMapping("/{clienteId}")

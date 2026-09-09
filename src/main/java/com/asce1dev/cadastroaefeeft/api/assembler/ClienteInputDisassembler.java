@@ -16,8 +16,10 @@ public class ClienteInputDisassembler {
 	public Cliente toDomainObject(ClienteInput clienteInput) {
 		return modelMapper.map(clienteInput, Cliente.class);
 	}
-	
+
 	public void copyToDomainObject(ClienteInput clienteInput, Cliente cliente) {
+		String senhaGovAtual = cliente.getSenhaGov();
 		modelMapper.map(clienteInput, cliente);
+		cliente.setSenhaGov(senhaGovAtual);
 	}
 }

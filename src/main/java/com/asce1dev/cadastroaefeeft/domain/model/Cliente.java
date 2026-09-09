@@ -28,6 +28,7 @@ public class Cliente {
 	@Column(unique = true, nullable = false)
 	private String cpf;
 
+	@Column(length = 512)
 	private String senhaGov;
 
 	private String email;
