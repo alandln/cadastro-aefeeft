@@ -4,11 +4,7 @@ import com.asce1dev.cadastroaefeeft.api.model.ClienteModel;
 import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor

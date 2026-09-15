@@ -1,7 +1,6 @@
 package com.asce1dev.cadastroaefeeft.domain.service;
 
 import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeEmUsoException;
-import com.asce1dev.cadastroaefeeft.domain.exception.EntidadeNaoEncontradaException;
 import com.asce1dev.cadastroaefeeft.domain.exception.NaoAutenticadoException;
 import com.asce1dev.cadastroaefeeft.domain.exception.NegocioException;
 import com.asce1dev.cadastroaefeeft.domain.exception.UsuarioNaoEncontradoException;
@@ -11,7 +10,6 @@ import com.asce1dev.cadastroaefeeft.domain.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,7 @@ import java.util.List;
 public class UsuarioService {
 
     private static final String MSG_ENTIDADE_EM_USO = "Usuário de código %d não pode ser removido," +
-            "pois está em uso";
+            " pois está em uso";
     private static final String MSG_REAUTENTICACAO_INVALIDA =
             "Não foi possível confirmar as credenciais do usuário";
 

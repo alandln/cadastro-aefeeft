@@ -1,8 +1,6 @@
 package com.asce1dev.cadastroaefeeft.api.assembler;
 
-import com.asce1dev.cadastroaefeeft.api.model.ClienteModel;
 import com.asce1dev.cadastroaefeeft.api.model.UsuarioModel;
-import com.asce1dev.cadastroaefeeft.domain.model.Cliente;
 import com.asce1dev.cadastroaefeeft.domain.model.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
